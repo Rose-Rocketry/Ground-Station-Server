@@ -1,0 +1,49 @@
+from flask import Flask
+import wiringpi
+import json
+
+wiringpi.wiringPiSetupGpio()
+
+serial = wiringpi.serialOpen('/dev/ttyS0', 9600)
+#serial = wiringpi.serialOpen('/dev/ttyAMA0', 9600)
+#serial = wiringpi.serialOpen('/dev/bus/usb/001/006', 9600)
+button = """<br>
+            <button type="button" onclick="history.back()">Ok</button>
+        """
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return """
+        <p>Status: {}</p>
+        <ul>
+            <li><a href="/send_telemetry">Send</a></li>
+            <li><a href="/receive_telemetry">Receive</a></li>
+        </ul>
+    """.format( "Active" if serial > 0 else "Inactive")
+
+@app.route("/send_telemetry")
+def send_data():
+    wiringpi.serialPuts(serial, 'Hello, world!')
+    return """
+        <p>Sending Telemetry</p>
+        <script>
+            window.setTimeout("history.back()", 1000)
+        </script>
+        """
+
+@app.route("/receive_telemetry")
+def receive_data():
+    if(wiringpi.serialDataAvail(serial) < 0):
+        return "<p> No data available.</p>"+button
+    else:
+        uart_data = ""
+        while(wiringpi.serialDataAvail(serial) > 0):
+            uart_data += chr(wiringpi.serialGetChar(serial))
+
+            try:
+                json.loads(uart_data)
+                return "<p>Data: "+uart_data+"</p>"+button
+            except json.JSONDecodeError:
+                return 
