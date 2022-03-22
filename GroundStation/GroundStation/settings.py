@@ -71,6 +71,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GroundStation.wsgi.application'
 ASGI_APPLICATION = 'GroundStation.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('0.0.0.0', 6379)],
+        },
+    },
+}
 
 
 # Database
