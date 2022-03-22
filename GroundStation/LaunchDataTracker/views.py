@@ -9,10 +9,11 @@ from .models import *
 @csrf_exempt
 def send_telemetry(req, payload_id):
     '''Temporary Send Data'''
-    if req.method == "GET":
+    if req.method != "POST":
         return HttpResponse("🎉 You should not be seeing this. XP")
     try:
         launch = LaunchInfo.objects.get(flight_computer=payload_id, active_launch=True)
+        print(req.body)
         data = json.loads(req.body)
         TelemetryPacket.objects.create(telemetry = data, launch=launch)
     except LaunchInfo.DoesNotExist:
