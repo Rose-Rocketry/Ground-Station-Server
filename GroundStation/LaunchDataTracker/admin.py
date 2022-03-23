@@ -7,3 +7,4 @@ from .models import *
 
 admin.site.register(LaunchInfo)
 admin.site.register(TelemetryPacket)
+admin.site.register(Payload)
