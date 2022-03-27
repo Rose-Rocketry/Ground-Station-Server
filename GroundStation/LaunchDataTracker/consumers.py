@@ -21,7 +21,9 @@ class TelemetryConsumer(WebsocketConsumer):
             self.launch = LaunchInfo.objects.get(flight_computer = payload, active_launch=True)
             self.accept()
         except LaunchInfo.DoesNotExist:
-            #print("Failed to get launch info")
+            print("Failed to get launch info")
+            self.accept()
+            self.send("{\"status\":\"No Launch Info\"")
             self.close()
 
     

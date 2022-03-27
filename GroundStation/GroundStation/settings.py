@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8q2+)6er!d44hh(s^c*lug^badmm#i!h(uw0n7=uc3@zvt72y+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -75,7 +75,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('0.0.0.0', 6379)],
+            "hosts": [('channels', 6379)],
         },
     },
 }
@@ -87,7 +87,7 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': '0.0.0.0',
+        'HOST': 'db',
         'NAME': 'telemetry',
         'USER': 'rocketry',
         'PASSWORD': 'Explode2030',
@@ -137,4 +137,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_ROOT = '/workspace/GroundStation/static/'
+STATIC_ROOT = './static/'
