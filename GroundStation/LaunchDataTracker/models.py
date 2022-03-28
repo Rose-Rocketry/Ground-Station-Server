@@ -11,14 +11,16 @@ class Payload(models.Model):
     features = models.JSONField("Feature Set", default = _default_features)
 
     def __str__(self):
-        return self.model_name
+        return self.model_name.__str__()
 
 class LaunchInfo(models.Model):
+    """ Information about the launch parameters """
     class Meta:
+        """ Meta information about launch parameters """
         constraints = [
             models.UniqueConstraint(fields=['flight_computer'], condition=models.Q(active_launch=True), name='unique_active_launch')
         ]
-    '''A model for a launch at a given site.'''
+
     liftoff_time = models.DateTimeField("Est. Liftoff Time")
     active_launch = models.BooleanField("Launch Active")
     flight_computer = models.ForeignKey(Payload, on_delete=models.CASCADE)
@@ -39,4 +41,13 @@ class TelemetryPacket(models.Model):
         return f"{self.time_received} {self.telemetry} {self.launch.flight_computer.model_name}"
 
 class PeripheralStatus(models.Model):
-    peripheral_name = models.ManyToManyField(LaunchInfo)
+    """ A database for the parameters and settings of a peripheral. """
+    def _default_status():
+        return {"status": "none"}
+        
+    launch = models.ManyToManyField(LaunchInfo)
+    p_id = models.CharField("Peripheral ID", max_length=255)
+    p_data = models.JSONField("Data",default = _default_status )
+
+    def __str__(self):
+        return self.p_id.__str__()

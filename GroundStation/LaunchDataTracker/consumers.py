@@ -80,3 +80,15 @@ class ClientTelemetryConsumer(WebsocketConsumer):
     def telemetry_message(self, event):
         """A handler for receiving telemetry"""
         self.send(json.dumps(event))
+
+        
+class PeripheralConsumer(WebsocketConsumer):
+    """A consumer for communication between the GS and a peripheral."""
+
+    def connect(self):
+        self.peripheral = self.scope['url_route']['kwargs']['peripheral_name']
+        async_to_sync(self.channel_layer.group_add)(self.peripheral, self.channel_name)
+        self.accept()
+
+    def disconnect(self, code):
+        async_to_sync(self.channel_layer.group_disconnect)(self.peripheral, self.channel_name)

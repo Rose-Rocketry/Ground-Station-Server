@@ -25,3 +25,4 @@ class LaunchAdmin(admin.ModelAdmin):
 
 admin.site.register(TelemetryPacket)
 admin.site.register(Payload)
+admin.site.register(PeripheralStatus)
