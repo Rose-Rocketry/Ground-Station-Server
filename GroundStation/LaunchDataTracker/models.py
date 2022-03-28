@@ -14,6 +14,10 @@ class Payload(models.Model):
         return self.model_name
 
 class LaunchInfo(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['flight_computer'], condition=models.Q(active_launch=True), name='unique_active_launch')
+        ]
     '''A model for a launch at a given site.'''
     liftoff_time = models.DateTimeField("Est. Liftoff Time")
     active_launch = models.BooleanField("Launch Active")
@@ -34,3 +38,5 @@ class TelemetryPacket(models.Model):
     def __str__(self):
         return f"{self.time_received} {self.telemetry} {self.launch.flight_computer.model_name}"
 
+class PeripheralStatus(models.Model):
+    peripheral_name = models.ManyToManyField(LaunchInfo)
