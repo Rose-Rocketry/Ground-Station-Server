@@ -20,11 +20,13 @@ class TelemetryConsumer(WebsocketConsumer):
             payload = Payload.objects.get(model_name = self.payload)
             self.launch = LaunchInfo.objects.get(flight_computer = payload, active_launch=True)
             self.accept()
+            return
         except LaunchInfo.DoesNotExist:
             print("Failed to get launch info")
             self.accept()
             self.send("{\"status\":\"No Launch Info\"")
             self.close()
+            return
 
     
 
@@ -69,7 +71,7 @@ class ClientTelemetryConsumer(WebsocketConsumer):
 
     def disconnect(self, code):
         """Handle when the socket is disconnected."""
-        
+        #TODO Send a message of things connected and disconnected
         async_to_sync(self.channel_layer.group_discard)(self.payload, self.channel_name)
         
 
@@ -81,14 +83,31 @@ class ClientTelemetryConsumer(WebsocketConsumer):
         """A handler for receiving telemetry"""
         self.send(json.dumps(event["data"]))
 
+    def status_message(self, event):
+        """Handles application level"""
+
+
         
 class PeripheralConsumer(WebsocketConsumer):
     """A consumer for communication between the GS and a peripheral."""
 
     def connect(self):
         self.peripheral = self.scope['url_route']['kwargs']['peripheral_name']
+        #Sender should be the device.
         self.sender = self.scope['url_route']['kwargs']['sender_name']
         async_to_sync(self.channel_layer.group_add)(self.peripheral, self.channel_name)
+        
+        #Get database objects
+        peripherals = PeripheralStatus.objects.filter(p_id = self.peripheral)
+        if len(peripherals) == 0:
+            peripherals = PeripheralStatus.objects.create(p_id=self.peripheral)
+
+        if len(peripherals[0].launch.filter(active_launch=True)) == 0:
+            self.accept()
+            self.send(json.dumps({"status":"failed", "reason":"No launch found."}))
+            self.close()
+            return
+
         self.accept()
 
     def disconnect(self, code):
@@ -96,6 +115,7 @@ class PeripheralConsumer(WebsocketConsumer):
 
     def state_update(self, event):
         """Handles when the state of the device is updated"""
+        
         if event['sender'] != self.sender:
             self.send(json.dumps(event["data"]))
 

@@ -7,7 +7,7 @@ class Payload(models.Model):
         """Get default features"""
         return {'features': ['minimum']}
 
-    model_name = models.CharField("Payload ID", max_length=255)
+    model_name = models.CharField("Payload ID", max_length=255, unique=True)
     features = models.JSONField("Feature Set", default = _default_features)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class PeripheralStatus(models.Model):
         return {"status": "none"}
         
     launch = models.ManyToManyField(LaunchInfo)
-    p_id = models.CharField("Peripheral ID", max_length=255)
+    p_id = models.CharField("Peripheral ID", max_length=255, unique=True)
     p_data = models.JSONField("Data",default = _default_status )
 
     def __str__(self):
