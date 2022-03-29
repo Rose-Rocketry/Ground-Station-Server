@@ -79,7 +79,7 @@ class ClientTelemetryConsumer(WebsocketConsumer):
 
     def telemetry_message(self, event):
         """A handler for receiving telemetry"""
-        self.send(json.dumps(event))
+        self.send(json.dumps(event["data"]))
 
         
 class PeripheralConsumer(WebsocketConsumer):
@@ -87,8 +87,32 @@ class PeripheralConsumer(WebsocketConsumer):
 
     def connect(self):
         self.peripheral = self.scope['url_route']['kwargs']['peripheral_name']
+        self.sender = self.scope['url_route']['kwargs']['sender_name']
         async_to_sync(self.channel_layer.group_add)(self.peripheral, self.channel_name)
         self.accept()
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_disconnect)(self.peripheral, self.channel_name)
+
+    def state_update(self, event):
+        """Handles when the state of the device is updated"""
+        if event['sender'] != self.sender:
+            self.send(json.dumps(event["data"]))
+
+    def receive(self, text_data=None, bytes_data=None):
+        try:
+            data = json.loads(text_data)
+
+            #Send Messages to all clients:
+            async_to_sync(self.channel_layer.group_send)(
+                self.peripheral,
+                {
+                    "type": "state_update",
+                    "sender":self.sender,
+                    "data": data
+                }
+            )
+
+            #TelemetryPacket.objects.create(telemetry = data, launch = self.launch)
+        except ValueError:
+            print(f"Invalid status for {self.peripheral}")
