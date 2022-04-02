@@ -9,6 +9,7 @@ class Payload(models.Model):
 
     model_name = models.CharField("Payload ID", max_length=255, unique=True)
     features = models.JSONField("Feature Set", default = _default_features)
+    connected = models.BooleanField("Connected", default = False)
 
     def __str__(self):
         return self.model_name.__str__()
@@ -48,6 +49,7 @@ class PeripheralStatus(models.Model):
     launch = models.ManyToManyField(LaunchInfo)
     p_id = models.CharField("Peripheral ID", max_length=255, unique=True)
     p_data = models.JSONField("Data",default = _default_status )
+    connected = models.BooleanField(default = False)
 
     def __str__(self):
         return self.p_id.__str__()

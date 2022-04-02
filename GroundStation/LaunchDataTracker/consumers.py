@@ -13,7 +13,7 @@ class TelemetryConsumer(WebsocketConsumer):
     def connect(self):
         """Handle when a new connection is being made"""
         self.payload = self.scope['url_route']['kwargs']['payload_name']
-        async_to_sync(self.channel_layer.group_add)(self.payload, self.channel_name)
+        async_to_sync(self.channel_layer.group_add)("telemetry", self.channel_name)
 
         try:
             #Payload and launches
@@ -59,15 +59,15 @@ class TelemetryConsumer(WebsocketConsumer):
         #print(event)
         
 
-class ClientTelemetryConsumer(WebsocketConsumer):
+class ClientConsumer(WebsocketConsumer):
     """This pipes data to the client consumer."""
     
     def connect(self):
         """Handles when socket is connected"""
-        self.payload = self.scope['url_route']['kwargs']['payload_name']
-        async_to_sync(self.channel_layer.group_add)(self.payload, self.channel_name)
-        """Handle when a new connection is being made"""
+        async_to_sync(self.channel_layer.group_add)("telemetry", self.channel_name)
         self.accept()
+
+        #TODO get all connected peripherals for the given launch
 
     def disconnect(self, code):
         """Handle when the socket is disconnected."""
@@ -133,6 +133,5 @@ class PeripheralConsumer(WebsocketConsumer):
                 }
             )
 
-            #TelemetryPacket.objects.create(telemetry = data, launch = self.launch)
         except ValueError:
             print(f"Invalid status for {self.peripheral}")
