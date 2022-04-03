@@ -1,7 +1,10 @@
+from django import views
 from django.http import Http404, JsonResponse
 from django.shortcuts import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+from django.contrib.auth.models import User, Group
+from .serializers import PayloadSerializer, PeripheralSerializer, UserSerializer, GroupSerializer, LaunchSerializer
+from rest_framework import viewsets, permissions
 
 from .models import *
 
@@ -11,7 +14,7 @@ def get_all_launches(req):
     launches = LaunchInfo.objects.all()
     list = []
     for launch in launches:
-        list.append({"name":str(launch), "id":str(launch.id), "active":str(launch.active_launch)})
+        list.append({"name":launch.launch_site, "id":str(launch.id), "active":str(launch.active_launch)})
 
     return JsonResponse({"launches": list})
 
@@ -59,3 +62,46 @@ def get_peripheral_launches(req, peripheral_id):
 def index(req):
     ''' HI '''
     return HttpResponse("Welcome!")
+
+
+### API Endpoints
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class LaunchViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows launches to be viewed or edited.
+    """
+    queryset = LaunchInfo.objects.all()
+    serializer_class = LaunchSerializer
+    permission_classes = [permissions.AllowAny]
+
+class PayloadViewSet(viewsets.ModelViewSet):
+    """
+    Gets all payloads
+    """
+    queryset = Payload.objects.all()
+    serializer_class = PayloadSerializer
+    permission_classes = [permissions.AllowAny]
+
+class PeripheralViewSet(viewsets.ModelViewSet):
+    """
+    Gets all peripherals
+    """
+    queryset = PeripheralStatus.objects.all()
+    serializer_class = PeripheralSerializer
+    permission_classes = [permissions.AllowAny]

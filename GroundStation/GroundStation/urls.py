@@ -17,8 +17,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import routers
+import LaunchDataTracker.views
+
+router = routers.DefaultRouter()
+router.register(r'users', LaunchDataTracker.views.UserViewSet,)
+router.register(r'groups', LaunchDataTracker.views.GroupViewSet)
+router.register(r'launches', LaunchDataTracker.views.LaunchViewSet)
+router.register(r'payloads',LaunchDataTracker.views.PayloadViewSet)
+router.register(r'peripherals', LaunchDataTracker.views.PeripheralViewSet)
 
 urlpatterns = [
     path('telemetry/', include('LaunchDataTracker.urls')),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
