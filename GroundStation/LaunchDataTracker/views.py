@@ -6,6 +6,15 @@ import json
 from .models import *
 
 # Create your views here.
+def get_all_launches(req):
+    """Returns a json list of all items"""
+    launches = LaunchInfo.objects.all()
+    list = []
+    for launch in launches:
+        list.append({"name":str(launch), "id":str(launch.id), "active":str(launch.active_launch)})
+
+    return JsonResponse({"launches": list})
+
 @csrf_exempt
 def send_telemetry(req, payload_id):
     '''Temporary Send Data'''
@@ -40,7 +49,7 @@ def get_peripheral_launches(req, peripheral_id):
 
         launch_list = []
         for launch in launches:
-            launch_list.append({str(launch): launch.id})
+            launch_list.append({"name":str(launch), "id": launch.id})
         return JsonResponse({"launches":launch_list})
 
     except PeripheralStatus.DoesNotExist:
