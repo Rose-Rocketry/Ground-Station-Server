@@ -96,7 +96,7 @@ class PeripheralConsumer(WebsocketConsumer):
         #Sender should be the device.
         self.sender = self.scope['url_route']['kwargs']['sender_name']
         async_to_sync(self.channel_layer.group_add)(self.peripheral, self.channel_name)
-        
+
         #Get database objects
         peripherals = PeripheralStatus.objects.filter(p_id = self.peripheral)
         if len(peripherals) == 0:
@@ -112,7 +112,7 @@ class PeripheralConsumer(WebsocketConsumer):
         #self.send(json.dumps(peripherals[0].p_data))
 
     def disconnect(self, code):
-        async_to_sync(self.channel_layer.group_disconnect)(self.peripheral, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.peripheral, self.channel_name)
 
     def state_update(self, event):
         """Handles when the state of the device is updated"""
