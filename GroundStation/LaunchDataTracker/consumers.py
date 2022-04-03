@@ -64,7 +64,8 @@ class ClientConsumer(WebsocketConsumer):
     
     def connect(self):
         """Handles when socket is connected"""
-        async_to_sync(self.channel_layer.group_add)("telemetry", self.channel_name)
+        self.payload = self.scope['url_route']['kwargs']['payload_name']
+        async_to_sync(self.channel_layer.group_add)(self.payload, self.channel_name)
         self.accept()
 
         #TODO get all connected peripherals for the given launch
