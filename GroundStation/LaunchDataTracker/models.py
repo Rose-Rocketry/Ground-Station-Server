@@ -22,12 +22,15 @@ class LaunchInfo(models.Model):
             models.UniqueConstraint(fields=['flight_computer'], condition=models.Q(active_launch=True), name='unique_active_launch')
         ]
 
+    launch_site = models.CharField("Launch Site", max_length=255)
+    
     liftoff_time = models.DateTimeField("Est. Liftoff Time")
     active_launch = models.BooleanField("Launch Active")
     flight_computer = models.ForeignKey(Payload, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.liftoff_time) + (":ACTIVE " if self.active_launch else ":INACTIVE ")+ self.flight_computer.model_name
+        active  = "ACTIVE "if self.active_launch else ":INACTIVE "
+        return f"{self.launch_site}:{active} {self.flight_computer.model_name} {self.id}"
 
 class TelemetryPacket(models.Model):
     '''A model for recording the packets sent from any rocket.'''

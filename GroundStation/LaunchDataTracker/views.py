@@ -29,6 +29,24 @@ def get_telemetry(req, launch_id):
     except LaunchInfo.DoesNotExist:
         return Http404()
 
+def get_peripheral_launches(req, peripheral_id):
+    '''
+    Gets all ative launches that use the given peripheral id.
+        The format is {launch name : launch id (id to be passed in url)}
+    '''
+    try:
+        peripheral = PeripheralStatus.objects.get(p_id=peripheral_id)
+        launches = peripheral.launch.all()
+
+        launch_list = []
+        for launch in launches:
+            launch_list.append({str(launch): launch.id})
+        return JsonResponse({"launches":launch_list})
+
+    except PeripheralStatus.DoesNotExist:
+        return Http404()
+    
+
 def index(req):
     ''' HI '''
     return HttpResponse("Welcome!")
