@@ -109,7 +109,7 @@ class PeripheralConsumer(WebsocketConsumer):
             return
 
         self.accept()
-        self.send(json.dumps(peripherals.p_data))
+        self.send(json.dumps(peripherals[0].p_data))
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_disconnect)(self.peripheral, self.channel_name)
