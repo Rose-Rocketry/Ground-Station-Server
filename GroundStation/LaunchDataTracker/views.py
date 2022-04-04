@@ -9,15 +9,6 @@ from rest_framework import viewsets, permissions
 from .models import *
 
 # Create your views here.
-def get_all_launches(req):
-    """Returns a json list of all items"""
-    launches = LaunchInfo.objects.all()
-    list = []
-    for launch in launches:
-        list.append({"name":launch.launch_site, "id":str(launch.id), "active":str(launch.active_launch)})
-
-    return JsonResponse({"launches": list})
-
 @csrf_exempt
 def send_telemetry(req, payload_id):
     '''Temporary Send Data'''
