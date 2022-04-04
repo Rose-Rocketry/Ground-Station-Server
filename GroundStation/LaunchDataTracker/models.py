@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 # Create your models here.
 
 class Payload(models.Model):
@@ -16,11 +17,6 @@ class Payload(models.Model):
 
 class LaunchInfo(models.Model):
     """ Information about the launch parameters """
-    class Meta:
-        """ Meta information about launch parameters """
-        constraints = [
-            models.UniqueConstraint(fields=['flight_computer'], condition=models.Q(active_launch=True), name='unique_active_launch')
-        ]
 
     launch_site = models.CharField("Launch Site", max_length=255)
     
