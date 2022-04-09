@@ -18,7 +18,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class LaunchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = LaunchInfo
-        fields = ['launch_site', 'flight_computer', 'liftoff_time', 'active_launch', 'id']
+        fields = ['launch_site', 'flight_computer', 'liftoff_time', 'active_launch', 'id', 'misc_info']
 
 class PayloadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
