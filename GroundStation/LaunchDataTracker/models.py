@@ -24,6 +24,8 @@ class LaunchInfo(models.Model):
     active_launch = models.BooleanField("Launch Active")
     flight_computer = models.ForeignKey(Payload, on_delete=models.CASCADE)
 
+    misc_info = models.JSONField("Miscellaneous Info")
+
     def __str__(self):
         active  = "ACTIVE "if self.active_launch else ":INACTIVE "
         return f"{self.launch_site}:{active} {self.flight_computer.model_name} {self.id}"
