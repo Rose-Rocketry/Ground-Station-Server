@@ -8,8 +8,7 @@ from channels.db import database_sync_to_async
 
 class TelemetryConsumer(WebsocketConsumer):
     """This is the consumer for the telemetry"""
-        
-
+    
     def connect(self):
         """Handle when a new connection is being made"""
         self.payload = self.scope['url_route']['kwargs']['payload_name']
@@ -26,9 +25,7 @@ class TelemetryConsumer(WebsocketConsumer):
             self.accept()
             self.send("{\"status\":\"No Launch Info\"")
             self.close()
-            return
-
-    
+            return 
 
     def disconnect(self, code):
         """Handle when the socket is disconnected."""
